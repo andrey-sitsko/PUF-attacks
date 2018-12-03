@@ -1,40 +1,87 @@
-from sklearn.linear_model import LogisticRegression
 import zipfile
 import pandas
 import numpy as np
 import os
 
 TRAINING_EDGE=0.7
-NROWS=200
-SAMPLES=['Base8.zip', 'Base16.zip', 'Base24.zip']
+NROWS=5000
 
-chartDataX = []
-chartDataY = []
-trainingEdge=0
+def drawChart(X,Y,title):
+    import seaborn as sns
+    import matplotlib.pyplot as plt
+    chart=sns.regplot(x=X, y=Y, fit_reg=False)
+    chart.set_title(title)
+    plt.show()
 
-#for fileName in SAMPLES:
-for fileName in os.listdir('samples/Lab 2/'):
+def getDFrame(fileName):
     name=os.path.splitext(fileName)[0]
     filepath=zipfile.ZipFile('./samples/Lab 2/{}'.format(fileName), 'r').extract('{}.txt'.format(name), 'Lab2_unzipped')
-
-    logreg = LogisticRegression(C=1e5, solver='lbfgs', multi_class='multinomial')
     dFrame=pandas.read_csv(filepath,sep=" ",header=None,dtype=str,nrows=NROWS)
+    os.remove(filepath)
+    return dFrame
 
-    X=[[int(c) for c in i] for i in dFrame.values[:,0]]
-    Y=np.array(dFrame.values[:,1]).astype(int)
+def logisticRegression():
+    from sklearn.linear_model import LogisticRegression
 
-    trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
+    chartDataX=[]
+    chartDataY=[]
 
-    logreg.fit(X[:trainingEdge], Y[:trainingEdge])
+    for fileName in os.listdir('samples/Lab 2/'):
+        dFrame=getDFrame(fileName)
+        X=[[int(c) for c in i] for i in dFrame.values[:,0]]
+        Y=np.array(dFrame.values[:,1]).astype(int)
+        trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
 
-    score=logreg.score(X[trainingEdge:], Y[trainingEdge:])
-    chartDataX.append(int(fileName.split("Base")[1].split(".zip")[0]))
-    chartDataY.append(int(score * 100))
+        logreg = LogisticRegression(solver="lbfgs")
+        logreg.fit(X[:trainingEdge], Y[:trainingEdge])
+        score=logreg.score(X[trainingEdge:], Y[trainingEdge:])
 
-    print('Score for {} is {} training set length {}'.format(name, score, trainingEdge))
+        chartDataX.append(int(fileName.split("Base")[1].split(".zip")[0]))
+        chartDataY.append(int(score * 100))
 
-import seaborn as sns
-import matplotlib.pyplot as plt
-chart=sns.regplot(x=chartDataX, y=chartDataY, fit_reg=False)
-chart.set_title("LogisticRegression, training set {}, test set {}".format(trainingEdge, NROWS - trainingEdge))
-plt.show()
+    drawChart(chartDataX, chartDataY, "LogisticRegression, training set {}, test set {}".format(trainingEdge, NROWS - trainingEdge))
+
+def supportVector():
+    from sklearn import svm
+
+    chartDataX=[]
+    chartDataY=[]
+
+    for fileName in os.listdir('samples/Lab 2/'):
+        dFrame=getDFrame(fileName)
+        X=[[int(c) for c in i] for i in dFrame.values[:,0]]
+        Y=np.array(dFrame.values[:,1]).astype(int)
+        trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
+
+        clf = svm.SVC(gamma="scale")
+        clf.fit(X, Y)
+        score=clf.score(X[trainingEdge:], Y[trainingEdge:])
+
+        chartDataX.append(int(fileName.split("Base")[1].split(".zip")[0]))
+        chartDataY.append(int(score * 100))
+
+    drawChart(chartDataX, chartDataY, "SupportVector, training set {}, test set {}".format(trainingEdge, NROWS - trainingEdge))
+
+def gradientBoosting():
+    from sklearn.ensemble import GradientBoostingRegressor
+
+    chartDataX=[]
+    chartDataY=[]
+
+    for fileName in os.listdir('samples/Lab 2/'):
+        dFrame=getDFrame(fileName)
+        X=[[int(c) for c in i] for i in dFrame.values[:,0]]
+        Y=np.array(dFrame.values[:,1]).astype(int)
+        trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
+
+        clf = GradientBoostingRegressor()
+        clf.fit(X, Y)
+
+        score=clf.score(X[trainingEdge:], Y[trainingEdge:])
+
+        chartDataX.append(int(fileName.split("Base")[1].split(".zip")[0]))
+        chartDataY.append(int(score * 100))
+
+    drawChart(chartDataX, chartDataY, "GradientBoostingRegressor, training set {}, test set {}".format(trainingEdge, NROWS - trainingEdge))
+
+gradientBoosting()
