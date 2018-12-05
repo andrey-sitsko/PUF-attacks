@@ -3,8 +3,8 @@ import pandas
 import numpy as np
 import os
 
-TRAINING_EDGE=0.7
-NROWS=1000
+TRAINING_EDGE=0.5
+NROWS=20000
 
 def drawChart(X,Y,title):
   import seaborn as sns
@@ -53,8 +53,8 @@ def supportVector():
     Y=np.array(dFrame.values[:,1]).astype(int)
     trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
 
-    clf = svm.SVC(gamma="auto")
-    clf.fit(X, Y)
+    clf=svm.SVC(gamma='auto')
+    clf.fit(X[:trainingEdge], Y[:trainingEdge])
     score=clf.score(X[trainingEdge:], Y[trainingEdge:])
 
     chartDataX.append(int(fileName.split("Base")[1].split(".zip")[0]))
@@ -75,7 +75,7 @@ def gradientBoosting():
     trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
 
     clf = GradientBoostingRegressor()
-    clf.fit(X, Y)
+    clf.fit(X[:trainingEdge], Y[:trainingEdge])
 
     score=clf.score(X[trainingEdge:], Y[trainingEdge:])
 
