@@ -63,7 +63,7 @@ def supportVector():
   drawChart(chartDataX, chartDataY, "SupportVector, training set {}, test set {}".format(trainingEdge, NROWS - trainingEdge))
 
 def gradientBoosting():
-  from sklearn.ensemble import GradientBoostingRegressor
+  from sklearn.ensemble import GradientBoostingClassifier
 
   chartDataX=[]
   chartDataY=[]
@@ -74,7 +74,7 @@ def gradientBoosting():
     Y=np.array(dFrame.values[:,1]).astype(int)
     trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
 
-    clf = GradientBoostingRegressor()
+    clf = GradientBoostingClassifier()
     clf.fit(X[:trainingEdge], Y[:trainingEdge])
 
     score=clf.score(X[trainingEdge:], Y[trainingEdge:])
