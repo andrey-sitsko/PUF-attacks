@@ -2,9 +2,10 @@ import zipfile
 import pandas
 import numpy as np
 import os
+from sklearn.preprocessing import MinMaxScaler
 
-TRAINING_EDGE=0.5
-NROWS=20000
+TRAINING_EDGE=0.8
+NROWS=40000
 
 def drawChart(X,Y,title):
   import seaborn as sns
@@ -20,6 +21,24 @@ def getDFrame(fileName):
   os.remove(filepath)
   return dFrame
 
+def convert(array):
+  preprocessed_data=[]
+
+  for i in range(len(array)):
+    item = array[i]
+
+    new_bits = []
+    xor = item[0]
+    new_bits.append(xor)
+
+    for bit in item[1:]:
+      xor ^= bit
+      new_bits.append(xor)
+
+    preprocessed_data.append(new_bits)
+
+  return np.array(preprocessed_data)
+
 def logisticRegression():
   from sklearn.linear_model import LogisticRegression
 
@@ -28,7 +47,7 @@ def logisticRegression():
 
   for fileName in os.listdir('samples/Lab 2/'):
     dFrame=getDFrame(fileName)
-    X=[[int(c) for c in i] for i in dFrame.values[:,0]]
+    X=convert([[int(c) for c in i] for i in dFrame.values[:,0]])
     Y=np.array(dFrame.values[:,1]).astype(int)
     trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
 
@@ -49,7 +68,7 @@ def supportVector():
 
   for fileName in os.listdir('samples/Lab 2/'):
     dFrame=getDFrame(fileName)
-    X=[[int(c) for c in i] for i in dFrame.values[:,0]]
+    X=convert([[int(c) for c in i] for i in dFrame.values[:,0]])
     Y=np.array(dFrame.values[:,1]).astype(int)
     trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
 
@@ -70,7 +89,7 @@ def gradientBoosting():
 
   for fileName in os.listdir('samples/Lab 2/'):
     dFrame=getDFrame(fileName)
-    X=[[int(c) for c in i] for i in dFrame.values[:,0]]
+    X=convert([[int(c) for c in i] for i in dFrame.values[:,0]])
     Y=np.array(dFrame.values[:,1]).astype(int)
     trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
 
