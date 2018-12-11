@@ -21,7 +21,7 @@ def getDFrame(fileName):
   os.remove(filepath)
   return dFrame
 
-def convert(array):
+def convertXOR(array):
   preprocessed_data=[]
 
   for i in range(len(array)):
@@ -47,7 +47,7 @@ def logisticRegression():
 
   for fileName in os.listdir('samples/Lab 2/'):
     dFrame=getDFrame(fileName)
-    X=convert([[int(c) for c in i] for i in dFrame.values[:,0]])
+    X=convertXOR([[int(c) for c in i] for i in dFrame.values[:,0]])
     Y=np.array(dFrame.values[:,1]).astype(int)
     trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
 
@@ -68,7 +68,7 @@ def supportVector():
 
   for fileName in os.listdir('samples/Lab 2/'):
     dFrame=getDFrame(fileName)
-    X=convert([[int(c) for c in i] for i in dFrame.values[:,0]])
+    X=convertXOR([[int(c) for c in i] for i in dFrame.values[:,0]])
     Y=np.array(dFrame.values[:,1]).astype(int)
     trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
 
@@ -89,7 +89,7 @@ def gradientBoosting():
 
   for fileName in os.listdir('samples/Lab 2/'):
     dFrame=getDFrame(fileName)
-    X=convert([[int(c) for c in i] for i in dFrame.values[:,0]])
+    X=convertXOR([[int(c) for c in i] for i in dFrame.values[:,0]])
     Y=np.array(dFrame.values[:,1]).astype(int)
     trainingEdge=int(len(dFrame.values) * TRAINING_EDGE)
 
